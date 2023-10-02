@@ -36,9 +36,7 @@ from tests.auxil.slots import mro_slots
 
 @pytest.fixture(scope="module", params=["str", "int"])
 def chat_id(request):
-    if request.param == "str":
-        return "@supergroupusername"
-    return 43
+    return "@supergroupusername" if request.param == "str" else 43
 
 
 @pytest.fixture(

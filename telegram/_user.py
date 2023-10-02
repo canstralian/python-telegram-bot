@@ -175,9 +175,7 @@ class User(TelegramObject):
         """:obj:`str`: Convenience property. If available, returns the user's :attr:`username`
         prefixed with "@". If :attr:`username` is not available, returns :attr:`full_name`.
         """
-        if self.username:
-            return f"@{self.username}"
-        return self.full_name
+        return f"@{self.username}" if self.username else self.full_name
 
     @property
     def full_name(self) -> str:
@@ -193,9 +191,7 @@ class User(TelegramObject):
         """:obj:`str`: Convenience property. If :attr:`username` is available, returns a t.me link
         of the user.
         """
-        if self.username:
-            return f"https://t.me/{self.username}"
-        return None
+        return f"https://t.me/{self.username}" if self.username else None
 
     async def get_profile_photos(
         self,

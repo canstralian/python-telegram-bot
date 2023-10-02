@@ -109,7 +109,7 @@ class BaseTest:
         app.add_handler(handler)
         update = make_command_update(text, bot=app.bot)
         assert not await self.response(app, update)
-        update = make_command_update(text + " one two", bot=app.bot)
+        update = make_command_update(f"{text} one two", bot=app.bot)
         assert await self.response(app, update)
 
     def _test_edited(self, message, handler_edited, handler_not_edited):
@@ -206,8 +206,12 @@ class TestCommandHandler(BaseTest):
     def test_directed_commands(self, bot, command):
         """Test recognition of commands with a mention to the bot"""
         handler = self.make_default_handler()
-        assert is_match(handler, make_command_update(command + "@" + bot.username, bot=bot))
-        assert not is_match(handler, make_command_update(command + "@otherbot", bot=bot))
+        assert is_match(
+            handler, make_command_update(f"{command}@{bot.username}", bot=bot)
+        )
+        assert not is_match(
+            handler, make_command_update(f"{command}@otherbot", bot=bot)
+        )
 
     def test_with_filter(self, command, bot):
         """Test that a CH with a (generic) filter responds if its filters match"""

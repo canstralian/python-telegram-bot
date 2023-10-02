@@ -100,8 +100,7 @@ class PendingState:
         if not self.task.done():
             raise RuntimeError("New state is not yet available")
 
-        exc = self.task.exception()
-        if exc:
+        if exc := self.task.exception():
             _LOGGER.exception(
                 "Task function raised exception. Falling back to old state %s",
                 self.old_state,
@@ -109,11 +108,12 @@ class PendingState:
             return self.old_state
 
         res = self.task.result()
-        if res is None and self.old_state is None:
-            res = ConversationHandler.END
-        elif res is None:
-            # returning None from a callback means that we want to stay in the old state
-            return self.old_state
+        if res is None:
+            if self.old_state is None:
+                res = ConversationHandler.END
+            else:
+                # returning None from a callback means that we want to stay in the old state
+                return self.old_state
 
         return res
 
@@ -358,8 +358,7 @@ class ConversationHandler(BaseHandler[Update, CCT]):
                 stacklevel=2,
             )
 
-        all_handlers: List[BaseHandler[Update, CCT]] = []
-        all_handlers.extend(entry_points)
+        all_handlers: List[BaseHandler[Update, CCT]] = list(entry_points)
         all_handlers.extend(fallbacks)
 
         for state_handlers in states.values():
@@ -613,17 +612,18 @@ class ConversationHandler(BaseHandler[Update, CCT]):
 
     def _get_key(self, update: Update) -> ConversationKey:
         """Builds the conversation key associated with the update."""
-        chat = update.effective_chat
-        user = update.effective_user
-
         key: List[Union[int, str]] = []
 
         if self.per_chat:
+            chat = update.effective_chat
             if chat is None:
                 raise RuntimeError("Can't build key for update without effective chat!")
-            key.append(chat.id)
+            else:
+                key.append(chat.id)
 
         if self.per_user:
+            user = update.effective_user
+
             if user is None:
                 raise RuntimeError("Can't build key for update without effective user!")
             key.append(user.id)
@@ -894,9 +894,7 @@ class ConversationHandler(BaseHandler[Update, CCT]):
         elif new_state is not None:
             if new_state not in self.states:
                 warn(
-                    f"{repr(handler.callback.__name__) if handler is not None else 'BaseHandler'} "
-                    f"returned state {new_state} which is unknown to the "
-                    f"ConversationHandler{' ' + self.name if self.name is not None else ''}.",
+                    f"{repr(handler.callback.__name__) if handler is not None else 'BaseHandler'} returned state {new_state} which is unknown to the ConversationHandler{f' {self.name}' if self.name is not None else ''}.",
                     stacklevel=2,
                 )
             self._conversations[key] = new_state

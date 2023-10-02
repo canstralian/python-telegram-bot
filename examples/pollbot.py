@@ -94,12 +94,12 @@ async def receive_poll_answer(update: Update, context: ContextTypes.DEFAULT_TYPE
     except KeyError:
         return
     selected_options = answer.option_ids
-    answer_string = ""
-    for question_id in selected_options:
-        if question_id != selected_options[-1]:
-            answer_string += questions[question_id] + " and "
-        else:
-            answer_string += questions[question_id]
+    answer_string = "".join(
+        f"{questions[question_id]} and "
+        if question_id != selected_options[-1]
+        else questions[question_id]
+        for question_id in selected_options
+    )
     await context.bot.send_message(
         answered_poll["chat_id"],
         f"{update.effective_user.mention_html()} feels {answer_string}!",

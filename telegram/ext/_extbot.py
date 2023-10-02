@@ -304,9 +304,7 @@ class ExtBot(Bot, Generic[RLARGS]):
     @classmethod
     def _extract_rl_kwargs(cls, data: Optional[JSONDict]) -> Optional[RLARGS]:
         """Extracts the `rate_limit_args` from `data` if it exists."""
-        if not data:
-            return None
-        return data.pop(cls.__RL_KEY, None)
+        return None if not data else data.pop(cls.__RL_KEY, None)
 
     async def _do_post(
         self,

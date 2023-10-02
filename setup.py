@@ -13,11 +13,9 @@ def get_requirements():
     requirements_list = []
 
     with Path("requirements.txt").open() as reqs:
-        for install in reqs:
-            if install.startswith("#"):
-                continue
-            requirements_list.append(install.strip())
-
+        requirements_list.extend(
+            install.strip() for install in reqs if not install.startswith("#")
+        )
     return requirements_list
 
 
@@ -50,9 +48,8 @@ def get_optional_requirements(raw=False):
                 if name.endswith("!ext"):
                     if raw:
                         continue
-                    else:
-                        name = name[:-4]
-                        requirements["ext"].append(dependency)
+                    name = name[:-4]
+                    requirements["ext"].append(dependency)
                 requirements[name].append(dependency)
                 requirements["all"].append(dependency)
 
@@ -70,7 +67,7 @@ def get_setup_kwargs(raw=False):
     first_part = version_file.split("# SETUP.PY MARKER")[0]
     exec(first_part)
 
-    kwargs = dict(
+    return dict(
         script_name=f"setup{raw_ext}.py",
         name=f"python-telegram-bot{raw_ext}",
         version=locals()["__version__"],
@@ -112,8 +109,6 @@ def get_setup_kwargs(raw=False):
         ],
         python_requires=">=3.8",
     )
-
-    return kwargs
 
 
 def main():

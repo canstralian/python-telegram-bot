@@ -423,8 +423,8 @@ class TestBotWithoutRequest:
         for param in params:
             assert param in param_names, f"{bot_method_name} is missing the parameter `{param}`"
 
-        rate_arg = "rate_limit_args"
         if bot_method_name.replace("_", "").lower() != "getupdates" and bot_class is ExtBot:
+            rate_arg = "rate_limit_args"
             assert rate_arg in param_names, f"{bot_method} is missing the parameter `{rate_arg}`"
 
     @bot_methods(ext_bot=False)
@@ -2943,7 +2943,7 @@ class TestBotWithRequest:
         assert await bot.set_chat_title(channel_id, ">>> telegram.Bot() - Tests")
 
     async def test_set_chat_description(self, bot, channel_id):
-        assert await bot.set_chat_description(channel_id, "Time: " + str(time.time()))
+        assert await bot.set_chat_description(channel_id, f"Time: {str(time.time())}")
 
     async def test_pin_and_unpin_message(self, bot, super_group_id):
         messages = []  # contains the Messages we sent
@@ -2962,7 +2962,7 @@ class TestBotWithRequest:
         assert len(messages) == 3  # Check if we sent 3 messages
 
         # Check if we pinned 3 messages
-        assert all([await i for i in pinned_messages_tasks])
+        assert all(await i for i in pinned_messages_tasks)
         assert all(i.done() for i in pinned_messages_tasks)  # Check if all tasks are done
 
         chat = await bot.get_chat(super_group_id)  # get the chat to check the pinned message

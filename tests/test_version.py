@@ -62,11 +62,12 @@ class TestVersion:
         assert version.releaselevel == version[3]
         assert version.serial == version[4]
 
+
+
         class TestClass:
             def __new__(cls, *args):
-                if use_tuple:
-                    return tuple(args)
-                return Version(*args)
+                return tuple(args) if use_tuple else Version(*args)
+
 
         assert isinstance(TestClass(1, 2, 3, "beta", 4), tuple if use_tuple else Version)
         assert version == TestClass(1, 2, 3, "beta", 4)

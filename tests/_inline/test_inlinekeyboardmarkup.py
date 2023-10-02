@@ -194,14 +194,14 @@ class TestInlineKeyboardMarkupWithoutRequest(TestInlineKeyboardMarkupBase):
 
     async def test_expected_values_empty_switch(self, inline_keyboard_markup, bot, monkeypatch):
         async def make_assertion(
-            url,
-            data,
-            reply_to_message_id=None,
-            disable_notification=None,
-            reply_markup=None,
-            timeout=None,
-            **kwargs,
-        ):
+                url,
+                data,
+                reply_to_message_id=None,
+                disable_notification=None,
+                reply_markup=None,
+                timeout=None,
+                **kwargs,
+            ):
             if reply_markup is not None:
                 markups = (
                     InlineKeyboardMarkup,
@@ -214,8 +214,8 @@ class TestInlineKeyboardMarkupWithoutRequest(TestInlineKeyboardMarkupBase):
                 else:
                     data["reply_markup"] = reply_markup
 
-            assert bool("'switch_inline_query': ''" in str(data["reply_markup"]))
-            assert bool("'switch_inline_query_current_chat': ''" in str(data["reply_markup"]))
+            assert "'switch_inline_query': ''" in str(data["reply_markup"])
+            assert "'switch_inline_query_current_chat': ''" in str(data["reply_markup"])
 
         inline_keyboard_markup.inline_keyboard[0][0]._unfreeze()
         inline_keyboard_markup.inline_keyboard[0][0].callback_data = None

@@ -65,9 +65,7 @@ class TestDefaultValue:
         default_one = DefaultValue(1)
 
         def foo(arg=default_one):
-            if arg is default_one:
-                return 1
-            return 2
+            return 1 if arg is default_one else 2
 
         assert foo() == 1
         assert foo(None) == 2

@@ -497,7 +497,6 @@ class TestJobQueue:
         assert job != job_2
         assert job == job_3
 
-        assert hash(job) == hash(job)
         assert hash(job) != hash(job_queue)
         assert hash(job) != hash(job_2)
         assert hash(job) == hash(job_3)

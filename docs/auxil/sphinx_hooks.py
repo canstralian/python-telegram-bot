@@ -64,7 +64,10 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
         for frame in inspect.stack():  # From https://github.com/sphinx-doc/sphinx/issues/9533
             if frame.function == "filter_members":
                 docobj = frame.frame.f_locals["self"].object
-                if not any(inc in str(docobj) for inc in included) and name == "check_update":
+                if (
+                    all(inc not in str(docobj) for inc in included)
+                    and name == "check_update"
+                ):
                     return True
                 break
 

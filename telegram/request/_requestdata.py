@@ -116,7 +116,6 @@ class RequestData:
         """Gives the files contained in this object as mapping of part name to encoded content."""
         multipart_data: UploadFileDict = {}
         for param in self._parameters:
-            m_data = param.multipart_data
-            if m_data:
+            if m_data := param.multipart_data:
                 multipart_data.update(m_data)
         return multipart_data

@@ -472,6 +472,7 @@ class TestTelegramObject:
         assert last_line_freezes or uses_with_unfrozen, f"{cls.__name__} is not frozen correctly"
 
     def test_freeze_unfreeze(self):
+
         class TestSub(TelegramObject):
             def __init__(self):
                 super().__init__()
@@ -481,7 +482,7 @@ class TestTelegramObject:
 
         foo = TestSub()
         foo._protected = False
-        assert foo._protected is False
+        assert not foo._protected
 
         with pytest.raises(
             AttributeError, match="Attribute `public` of class `TestSub` can't be set!"
@@ -495,9 +496,9 @@ class TestTelegramObject:
 
         foo._unfreeze()
         foo._protected = True
-        assert foo._protected is True
+        assert foo._protected
         foo.public = False
-        assert foo.public is False
+        assert not foo.public
         del foo.public
         del foo._protected
         assert not hasattr(foo, "public")

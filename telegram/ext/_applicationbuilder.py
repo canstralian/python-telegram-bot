@@ -285,17 +285,19 @@ class ApplicationBuilder(Generic[BT, CCT, UD, CD, BD, JQ]):
         persistence = DefaultValue.get_value(self._persistence)
         # If user didn't set updater
         if isinstance(self._updater, DefaultValue) or self._updater is None:
-            if isinstance(self._bot, DefaultValue):  # and didn't set a bot
-                bot: Bot = self._build_ext_bot()  # build a bot
-            else:
-                bot = self._bot
+            bot = (
+                self._build_ext_bot()
+                if isinstance(self._bot, DefaultValue)
+                else self._bot
+            )
             # now also build an updater/update_queue for them
             update_queue = DefaultValue.get_value(self._update_queue)
 
-            if self._updater is None:
-                updater = None
-            else:
-                updater = Updater(bot=bot, update_queue=update_queue)
+            updater = (
+                None
+                if self._updater is None
+                else Updater(bot=bot, update_queue=update_queue)
+            )
         else:  # if they set an updater, get all necessary attributes for Application from Updater:
             updater = self._updater
             bot = self._updater.bot
@@ -408,7 +410,7 @@ class ApplicationBuilder(Generic[BT, CCT, UD, CD, BD, JQ]):
 
     def _request_check(self, get_updates: bool) -> None:
         prefix = "get_updates_" if get_updates else ""
-        name = prefix + "request"
+        name = f"{prefix}request"
 
         # Code below tests if it's okay to set a Request object. Only okay if no other request args
         # or instances containing a Request were set previously

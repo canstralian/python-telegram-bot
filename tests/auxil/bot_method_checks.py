@@ -144,13 +144,19 @@ def check_shortcut_signature(
     bot_method_sig = inspect.signature(bot_method)
     shortcut_sig = inspect.signature(shortcut)
     for arg in expected_args:
-        if not shortcut_sig.parameters[arg].default == bot_method_sig.parameters[arg].default:
+        if (
+            shortcut_sig.parameters[arg].default
+            != bot_method_sig.parameters[arg].default
+        ):
             raise Exception(
                 f"Default for argument {arg} does not match the default of the Bot method."
             )
 
     for kwarg in additional_kwargs:
-        if not shortcut_sig.parameters[kwarg].kind == inspect.Parameter.KEYWORD_ONLY:
+        if (
+            shortcut_sig.parameters[kwarg].kind
+            != inspect.Parameter.KEYWORD_ONLY
+        ):
             raise Exception(f"Argument {kwarg} must be a positional-only argument!")
 
     return True
@@ -202,7 +208,7 @@ async def check_shortcut_call(
         received_kwargs = {
             name for name, value in kw.items() if name in ignored_args or value == name
         }
-        if not received_kwargs == expected_args:
+        if received_kwargs != expected_args:
             raise Exception(
                 f"{orig_bot_method.__name__} did not receive correct value for the parameters "
                 f"{expected_args - received_kwargs}"
@@ -237,10 +243,7 @@ def build_kwargs(signature: inspect.Signature, default_kwargs, dfv: Any = DEFAUL
                 kws[name] = []
             elif name == "media":
                 media = InputMediaPhoto("media", parse_mode=dfv)
-                if "list" in str(param.annotation).lower():
-                    kws[name] = [media]
-                else:
-                    kws[name] = media
+                kws[name] = [media] if "list" in str(param.annotation).lower() else media
             elif name == "results":
                 itmc = InputTextMessageContent(
                     "text", parse_mode=dfv, disable_web_page_preview=dfv
@@ -256,17 +259,11 @@ def build_kwargs(signature: inspect.Signature, default_kwargs, dfv: Any = DEFAUL
                 kws["error_message"] = "error"
             else:
                 kws[name] = True
-        # pass values for params that can have defaults only if we don't want to use the
-        # standard default
         elif name in default_kwargs:
             if dfv != DEFAULT_NONE:
                 kws[name] = dfv
-        # Some special casing for methods that have "exactly one of the optionals" type args
         elif name in ["location", "contact", "venue", "inline_message_id"]:
             kws[name] = True
-        # Special casing for some methods where the parameter is actually required, but is optional
-        # for compatibility reasons
-        # TODO: remove this once these arguments are marked as required
         elif name in {"sticker", "stickers", "sticker_format"}:
             kws[name] = "something passed"
         elif name == "until_date":

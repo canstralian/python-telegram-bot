@@ -704,8 +704,7 @@ class TestPicklePersistence:
         pickle_persistence.on_flush = True
 
         user_data = await pickle_persistence.get_user_data()
-        user_data[54321] = {}
-        user_data[54321]["test9"] = "test 10"
+        user_data[54321] = {"test9": "test 10"}
         assert pickle_persistence.user_data != user_data
 
         await pickle_persistence.update_user_data(54321, user_data[54321])
@@ -719,8 +718,7 @@ class TestPicklePersistence:
         assert user_data_test != user_data
 
         chat_data = await pickle_persistence.get_chat_data()
-        chat_data[54321] = {}
-        chat_data[54321]["test9"] = "test 10"
+        chat_data[54321] = {"test9": "test 10"}
         assert pickle_persistence.chat_data != chat_data
 
         await pickle_persistence.update_chat_data(54321, chat_data[54321])
@@ -791,8 +789,7 @@ class TestPicklePersistence:
         pickle_persistence.single_file = True
 
         user_data = await pickle_persistence.get_user_data()
-        user_data[54321] = {}
-        user_data[54321]["test9"] = "test 10"
+        user_data[54321] = {"test9": "test 10"}
         assert pickle_persistence.user_data != user_data
         await pickle_persistence.update_user_data(54321, user_data[54321])
         assert pickle_persistence.user_data == user_data
@@ -801,8 +798,7 @@ class TestPicklePersistence:
         assert user_data_test != user_data
 
         chat_data = await pickle_persistence.get_chat_data()
-        chat_data[54321] = {}
-        chat_data[54321]["test9"] = "test 10"
+        chat_data[54321] = {"test9": "test 10"}
         assert pickle_persistence.chat_data != chat_data
         await pickle_persistence.update_chat_data(54321, chat_data[54321])
         assert pickle_persistence.chat_data == chat_data

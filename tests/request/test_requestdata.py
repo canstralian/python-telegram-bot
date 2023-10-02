@@ -210,12 +210,12 @@ class TestRequestDataWithoutRequest:
             ]
         )
         expected_params = "chat_id=123&text=Hello+there%2F%21"
-        expected_url = "https://te.st/method?" + expected_params
+        expected_url = f"https://te.st/method?{expected_params}"
         assert data.url_encoded_parameters() == expected_params
         assert data.parametrized_url("https://te.st/method") == expected_url
 
         expected_params = "chat_id=123&text=Hello%20there/!"
-        expected_url = "https://te.st/method?" + expected_params
+        expected_url = f"https://te.st/method?{expected_params}"
         assert (
             data.url_encoded_parameters(encode_kwargs={"quote_via": quote, "safe": "/!"})
             == expected_params

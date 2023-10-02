@@ -93,8 +93,8 @@ class File(TelegramObject):
         super().__init__(api_kwargs=api_kwargs)
 
         # Required
-        self.file_id: str = str(file_id)
-        self.file_unique_id: str = str(file_unique_id)
+        self.file_id: str = file_id
+        self.file_unique_id: str = file_unique_id
         # Optionals
         self.file_size: Optional[int] = file_size
         self.file_path: Optional[str] = file_path
@@ -186,7 +186,7 @@ class File(TelegramObject):
             if custom_path is not None:
                 path = Path(custom_path)
             else:
-                path = Path(str(file_to_decrypt.parent) + "/decrypted_" + file_to_decrypt.name)
+                path = Path(f"{str(file_to_decrypt.parent)}/decrypted_{file_to_decrypt.name}")
             path.write_bytes(buf)
             return path
 

@@ -167,12 +167,14 @@ class AdmonitionInserter:
 
             # Parsing part of the docstring with attributes (parsing of properties follows later)
             docstring_lines = inspect.getdoc(inspected_class).splitlines()
-            lines_with_attrs = []
-            for idx, line in enumerate(docstring_lines):
-                if line.strip() == "Attributes:":
-                    lines_with_attrs = docstring_lines[idx + 1 :]
-                    break
-
+            lines_with_attrs = next(
+                (
+                    docstring_lines[idx + 1 :]
+                    for idx, line in enumerate(docstring_lines)
+                    if line.strip() == "Attributes:"
+                ),
+                [],
+            )
             for line in lines_with_attrs:
                 if not (line_match := attr_docstr_pattern.match(line)):
                     continue
@@ -358,21 +360,25 @@ class AdmonitionInserter:
 
         If no key phrases are found, the admonition will be inserted at the very end.
         """
-        for idx, value in list(enumerate(lines)):
-            if (
-                value.startswith(".. seealso:")
-                # The docstring contains heading "Examples:", but Sphinx will have it converted
-                # to ".. admonition: Examples":
-                or value.startswith(".. admonition:: Examples")
-                or value.startswith(".. version")
-                # The space after ":param" is important because docstring can contain ":paramref:"
-                # in its plain text in the beginning of a line (e.g. ExtBot):
-                or value.startswith(":param ")
-                # some classes (like "Credentials") have no params, so insert before attrs:
-                or value.startswith(".. attribute::")
-            ):
-                return idx
-        return len(lines) - 1
+        return next(
+            (
+                idx
+                for idx, value in list(enumerate(lines))
+                if (
+                    value.startswith(".. seealso:")
+                    # The docstring contains heading "Examples:", but Sphinx will have it converted
+                    # to ".. admonition: Examples":
+                    or value.startswith(".. admonition:: Examples")
+                    or value.startswith(".. version")
+                    # The space after ":param" is important because docstring can contain ":paramref:"
+                    # in its plain text in the beginning of a line (e.g. ExtBot):
+                    or value.startswith(":param ")
+                    # some classes (like "Credentials") have no params, so insert before attrs:
+                    or value.startswith(".. attribute::")
+                )
+            ),
+            len(lines) - 1,
+        )
 
     def _generate_admonitions(
         self,
@@ -489,13 +495,11 @@ class AdmonitionInserter:
         if (
             origin in (collections.abc.Callable, typing.IO)
             or arg is None
-            # no other check available (by type or origin) for these:
-            or str(type(arg)) in ("<class 'typing._SpecialForm'>", "<class 'ellipsis'>")
+            or str(type(arg))
+            in {"<class 'typing._SpecialForm'>", "<class 'ellipsis'>"}
         ):
             pass
 
-        # RECURSIVE CALLS
-        # for cases like Union[Sequence....
         elif origin in (
             Union,
             collections.abc.Coroutine,
@@ -507,8 +511,6 @@ class AdmonitionInserter:
         elif isinstance(arg, typing.TypeVar):
             # gets access to the "bound=..." parameter
             yield from self._resolve_arg(arg.__bound__)
-        # END RECURSIVE CALLS
-
         elif isinstance(arg, typing.ForwardRef):
             m = self.FORWARD_REF_PATTERN.match(str(arg))
             # We're sure it's a ForwardRef, so, unless it belongs to known exceptions,
@@ -518,21 +520,16 @@ class AdmonitionInserter:
                 cls = self._resolve_class(m.group("class_name"))
             except AttributeError:
                 # skip known ForwardRef's that need not be resolved to a Telegram class
-                if self.FORWARD_REF_SKIP_PATTERN.match(str(arg)):
-                    pass
-                else:
+                if not self.FORWARD_REF_SKIP_PATTERN.match(str(arg)):
                     raise NotImplementedError(f"Could not process ForwardRef: {arg}")
             else:
                 yield cls
 
-        # For custom generics like telegram.ext._application.Application[~BT, ~CCT, ~UD...].
-        # This must come before the check for isinstance(type) because GenericAlias can also be
-        # recognized as type if it belongs to <class 'types.GenericAlias'>.
-        elif str(type(arg)) in (
+        elif str(type(arg)) in {
             "<class 'typing._GenericAlias'>",
             "<class 'types.GenericAlias'>",
             "<class 'typing._LiteralGenericAlias'>",
-        ):
+        }:
             if "telegram" in str(arg):
                 # get_origin() of telegram.ext._application.Application[~BT, ~CCT, ~UD...]
                 # will produce <class 'telegram.ext._application.Application'>
@@ -542,8 +539,6 @@ class AdmonitionInserter:
             if "telegram" in str(arg):
                 yield arg
 
-        # For some reason "InlineQueryResult", "InputMedia" & some others are currently not
-        # recognized as ForwardRefs and are identified as plain strings.
         elif isinstance(arg, str):
             # args like "ApplicationBuilder[BT, CCT, UD, CD, BD, JQ]" can be recognized as strings.
             # Remove whatever is in the square brackets because it doesn't need to be parsed.

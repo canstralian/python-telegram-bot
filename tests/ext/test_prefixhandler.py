@@ -80,7 +80,7 @@ class TestPrefixHandler(BaseTest):
 
         assert await self.response(app, make_message_update(text))
         assert not is_match(handler, make_message_update(command))
-        assert not is_match(handler, make_message_update(prefix + "notacommand"))
+        assert not is_match(handler, make_message_update(f"{prefix}notacommand"))
         assert not is_match(handler, make_command_update(f"not {text} at start"))
         assert not is_match(
             handler, make_message_update(bot=app.bot, message=None, caption="caption")

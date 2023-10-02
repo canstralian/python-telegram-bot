@@ -948,7 +948,7 @@ class TestMessageWithoutRequest(TestMessageBase):
         message.chat.id = id_
         message.chat.type = type_
         # The leading - for group ids/ -100 for supergroup ids isn't supposed to be in the link
-        assert message.link == f"https://t.me/c/{3}/{message.message_id}"
+        assert message.link == f"https://t.me/c/3/{message.message_id}"
 
     def test_link_with_topics(self, message):
         message.chat.username = None
@@ -997,10 +997,7 @@ class TestMessageWithoutRequest(TestMessageBase):
         ]
 
         for _ in range(3):
-            # We run the same test multiple times to make sure that the caching is tested
-
-            attachment = message_params.effective_attachment
-            if attachment:
+            if attachment := message_params.effective_attachment:
                 condition = any(
                     message_params[message_type] is attachment
                     for message_type in expected_attachment_types

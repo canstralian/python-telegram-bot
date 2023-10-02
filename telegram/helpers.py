@@ -136,11 +136,14 @@ def effective_message_type(entity: Union["Message", "Update"]) -> Optional[str]:
     else:
         raise TypeError(f"The entity is neither Message nor Update (got: {type(entity)})")
 
-    for message_type in MessageType:
-        if message[message_type]:
-            return message_type
-
-    return None
+    return next(
+        (
+            message_type
+            for message_type in MessageType
+            if message[message_type]
+        ),
+        None,
+    )
 
 
 def create_deep_linked_url(

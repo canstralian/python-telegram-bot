@@ -132,7 +132,7 @@ class TestConstantsWithoutRequest:
 class TestConstantsWithRequest:
     async def test_max_message_length(self, bot, chat_id):
         good_text = "a" * constants.MessageLimit.MAX_TEXT_LENGTH
-        bad_text = good_text + "Z"
+        bad_text = f"{good_text}Z"
         tasks = asyncio.gather(
             bot.send_message(chat_id, text=good_text),
             bot.send_message(chat_id, text=bad_text),
@@ -145,7 +145,7 @@ class TestConstantsWithRequest:
 
     async def test_max_caption_length(self, bot, chat_id):
         good_caption = "a" * constants.MessageLimit.CAPTION_LENGTH
-        bad_caption = good_caption + "Z"
+        bad_caption = f"{good_caption}Z"
         tasks = asyncio.gather(
             bot.send_photo(chat_id, data_file("telegram.png").read_bytes(), good_caption),
             bot.send_photo(chat_id, data_file("telegram.png").read_bytes(), bad_caption),

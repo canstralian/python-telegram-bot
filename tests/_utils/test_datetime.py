@@ -57,9 +57,7 @@ with the TEST_WITH_OPT_DEPS=False environment variable in addition to the regula
 class TestDatetime:
     @staticmethod
     def localize(dt, tzinfo):
-        if TEST_WITH_OPT_DEPS:
-            return tzinfo.localize(dt)
-        return dt.replace(tzinfo=tzinfo)
+        return tzinfo.localize(dt) if TEST_WITH_OPT_DEPS else dt.replace(tzinfo=tzinfo)
 
     def test_helpers_utc(self):
         # Here we just test, that we got the correct UTC variant
