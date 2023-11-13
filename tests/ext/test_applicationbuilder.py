@@ -305,8 +305,8 @@ class TestApplicationBuilder:
         # other means that the parameters are passed correctly
 
         assert built_bot.token == bot.token
-        assert built_bot.base_url == "base_url" + bot.token
-        assert built_bot.base_file_url == "base_file_url" + bot.token
+        assert built_bot.base_url == f"base_url{bot.token}"
+        assert built_bot.base_file_url == f"base_file_url{bot.token}"
         assert built_bot.defaults is defaults
         assert built_bot.request is request
         assert built_bot._request[0] is get_updates_request

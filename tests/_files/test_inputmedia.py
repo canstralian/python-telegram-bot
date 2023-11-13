@@ -594,7 +594,7 @@ class TestSendMediaGroupWithoutRequest:
                 field_tuple[0] == "custom_filename"
                 for field_tuple in request_data.multipart_data.values()
             )
-            if result is True:
+            if result:
                 raise Exception("Test was successful")
 
         monkeypatch.setattr(bot.request, "post", make_assertion)
@@ -983,9 +983,7 @@ class TestSendMediaGroupWithRequest:
                 return InputMediaAudio(audio, **kwargs)
             if med_type == "photo":
                 return InputMediaPhoto(photo, **kwargs)
-            if med_type == "video":
-                return InputMediaVideo(video, **kwargs)
-            return None
+            return InputMediaVideo(video, **kwargs) if med_type == "video" else None
 
         message = await default_bot.send_photo(chat_id, photo)
 

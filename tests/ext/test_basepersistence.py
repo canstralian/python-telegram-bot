@@ -378,8 +378,7 @@ class TestBasePersistence:
         assert persistence.store_data.callback_data == callback_data
 
     def test_abstract_methods(self):
-        methods = list(BasePersistence.__abstractmethods__)
-        methods.sort()
+        methods = sorted(BasePersistence.__abstractmethods__)
         with pytest.raises(
             TypeError,
             match=", ".join(methods)

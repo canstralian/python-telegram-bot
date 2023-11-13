@@ -54,14 +54,10 @@ class TestWarnings:
                 make_assertion(subcls)
 
         covered_subclasses = defaultdict(set)
-        covered_subclasses.update(
-            {
-                PTBUserWarning: {
-                    PTBRuntimeWarning,
-                    PTBDeprecationWarning,
-                },
-            }
-        )
+        covered_subclasses[PTBUserWarning] = {
+            PTBRuntimeWarning,
+            PTBDeprecationWarning,
+        }
 
         make_assertion(PTBUserWarning)
 

@@ -409,14 +409,10 @@ class TelegramObject:
 
         for key in self._get_attrs_names(include_private=include_private):
             value = getattr(self, key, None)
-            if value is not None:
-                if recursive and hasattr(value, "to_dict"):
-                    data[key] = value.to_dict(recursive=True)
-                else:
-                    data[key] = value
-            elif not recursive:
+            if value is not None and recursive and hasattr(value, "to_dict"):
+                data[key] = value.to_dict(recursive=True)
+            elif value is not None or not recursive:
                 data[key] = value
-
         if recursive and data.get("from_user"):
             data["from"] = data.pop("from_user", None)
         if remove_bot:

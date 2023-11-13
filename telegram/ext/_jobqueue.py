@@ -876,9 +876,7 @@ class Job(Generic[CCT]):
             ) from exc
 
     def __eq__(self, other: object) -> bool:
-        if isinstance(other, self.__class__):
-            return self.id == other.id
-        return False
+        return self.id == other.id if isinstance(other, self.__class__) else False
 
     def __hash__(self) -> int:
         return hash(self.id)

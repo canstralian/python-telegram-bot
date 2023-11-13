@@ -71,9 +71,7 @@ class RequestParameter:
         """
         if isinstance(self.value, str):
             return self.value
-        if self.value is None:
-            return None
-        return json.dumps(self.value)
+        return None if self.value is None else json.dumps(self.value)
 
     @property
     def multipart_data(self) -> Optional[UploadFileDict]:
@@ -113,10 +111,7 @@ class RequestParameter:
         if isinstance(value, StringEnum):
             return value.value, []
         if isinstance(value, InputFile):
-            if value.attach_uri:
-                return value.attach_uri, [value]
-            return None, [value]
-
+            return (value.attach_uri, [value]) if value.attach_uri else (None, [value])
         if isinstance(value, InputMedia) and isinstance(value.media, InputFile):
             # We call to_dict and change the returned dict instead of overriding
             # value.media in case the same value is reused for another request

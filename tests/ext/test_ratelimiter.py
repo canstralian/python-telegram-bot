@@ -254,17 +254,18 @@ class TestAIORateLimiter:
             )
 
             async with rl_bot:
-                non_group_tasks = {}
-                group_tasks = {}
-                for i in range(4):
-                    group_tasks[i] = asyncio.create_task(
+                group_tasks = {
+                    i: asyncio.create_task(
                         rl_bot.send_message(chat_id=group_id, text="test")
                     )
-                for i in range(8):
-                    non_group_tasks[i] = asyncio.create_task(
+                    for i in range(4)
+                }
+                non_group_tasks = {
+                    i: asyncio.create_task(
                         rl_bot.send_message(chat_id=chat_id, text="test")
                     )
-
+                    for i in range(8)
+                }
                 await asyncio.sleep(0.85)
                 # We expect 5 requests:
                 # 1: `get_me` from `async with rl_bot`
@@ -299,15 +300,13 @@ class TestAIORateLimiter:
             )
 
             async with rl_bot:
-                non_chat_tasks = {}
-                chat_tasks = {}
-                for i in range(4):
-                    chat_tasks[i] = asyncio.create_task(
+                chat_tasks = {
+                    i: asyncio.create_task(
                         rl_bot.send_message(chat_id=-1, text="test")
                     )
-                for i in range(8):
-                    non_chat_tasks[i] = asyncio.create_task(rl_bot.get_me())
-
+                    for i in range(4)
+                }
+                non_chat_tasks = {i: asyncio.create_task(rl_bot.get_me()) for i in range(8)}
                 await asyncio.sleep(0.6)
                 # We expect 11 requests:
                 # 1: `get_me` from `async with rl_bot`

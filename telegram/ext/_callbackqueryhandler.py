@@ -140,20 +140,19 @@ class CallbackQueryHandler(BaseHandler[Update, CCT]):
         """
         # pylint: disable=too-many-return-statements
         if isinstance(update, Update) and update.callback_query:
-            callback_data = update.callback_query.data
-            if self.pattern:
-                if callback_data is None:
-                    return False
-                if isinstance(self.pattern, type):
-                    return isinstance(callback_data, self.pattern)
-                if callable(self.pattern):
-                    return self.pattern(callback_data)
-                if not isinstance(callback_data, str):
-                    return False
-                if match := re.match(self.pattern, callback_data):
-                    return match
-            else:
+            if not self.pattern:
                 return True
+            callback_data = update.callback_query.data
+            if callback_data is None:
+                return False
+            if isinstance(self.pattern, type):
+                return isinstance(callback_data, self.pattern)
+            if callable(self.pattern):
+                return self.pattern(callback_data)
+            if not isinstance(callback_data, str):
+                return False
+            if match := re.match(self.pattern, callback_data):
+                return match
         return None
 
     def collect_additional_context(

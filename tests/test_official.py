@@ -176,10 +176,12 @@ def find_next_sibling_until(tag, name, until):
 
 def parse_table(h4) -> List[List[str]]:
     """Parses the Telegram doc table and has an output of a 2D list."""
-    table = find_next_sibling_until(h4, "table", h4.find_next_sibling("h4"))
-    if not table:
+    if table := find_next_sibling_until(
+        h4, "table", h4.find_next_sibling("h4")
+    ):
+        return [[td.text for td in tr.find_all("td")] for tr in table.find_all("tr")[1:]]
+    else:
         return []
-    return [[td.text for td in tr.find_all("td")] for tr in table.find_all("tr")[1:]]
 
 
 def check_method(h4):

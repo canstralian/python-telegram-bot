@@ -99,8 +99,7 @@ class InlineKeyboardMarkup(TelegramObject):
         for row in data["inline_keyboard"]:
             tmp = []
             for col in row:
-                btn = InlineKeyboardButton.de_json(col, bot)
-                if btn:
+                if btn := InlineKeyboardButton.de_json(col, bot):
                     tmp.append(btn)
             keyboard.append(tmp)
 

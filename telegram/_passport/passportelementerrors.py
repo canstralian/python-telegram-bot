@@ -53,9 +53,9 @@ class PassportElementError(TelegramObject):
     ):
         super().__init__(api_kwargs=api_kwargs)
         # Required
-        self.source: str = str(source)
-        self.type: str = str(type)
-        self.message: str = str(message)
+        self.source: str = source
+        self.type: str = type
+        self.message: str = message
 
         self._id_attrs = (self.source, self.type)
 

@@ -162,8 +162,7 @@ class PrefixHandler(BaseHandler[Update, CCT]):
                 text_list = message.text.split()
                 if text_list[0].lower() not in self.commands:
                     return None
-                filter_result = self.filters.check_update(update)
-                if filter_result:
+                if filter_result := self.filters.check_update(update):
                     return text_list[1:], filter_result
                 return False
         return None

@@ -430,11 +430,10 @@ class DictPersistence(BasePersistence[Dict[Any, Any], Dict[Any, Any], Dict[Any, 
         Returns:
             :obj:`str`: The JSON-serialized conversations dict
         """
-        tmp: Dict[str, JSONDict] = {}
-        for handler, states in conversations.items():
-            tmp[handler] = {}
-            for key, state in states.items():
-                tmp[handler][json.dumps(key)] = state
+        tmp: Dict[str, JSONDict] = {
+            handler: {json.dumps(key): state for key, state in states.items()}
+            for handler, states in conversations.items()
+        }
         return json.dumps(tmp)
 
     @staticmethod
@@ -449,11 +448,12 @@ class DictPersistence(BasePersistence[Dict[Any, Any], Dict[Any, Any], Dict[Any, 
             :obj:`dict`: The conversations dict after decoding
         """
         tmp = json.loads(json_string)
-        conversations: Dict[str, ConversationDict] = {}
-        for handler, states in tmp.items():
-            conversations[handler] = {}
-            for key, state in states.items():
-                conversations[handler][tuple(json.loads(key))] = state
+        conversations: Dict[str, ConversationDict] = {
+            handler: {
+                tuple(json.loads(key)): state for key, state in states.items()
+            }
+            for handler, states in tmp.items()
+        }
         return conversations
 
     @staticmethod

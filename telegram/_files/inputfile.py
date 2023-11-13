@@ -79,7 +79,7 @@ class InputFile:
             reported_filename, self.input_file_content = load_file(obj)
             filename = filename or reported_filename
 
-        self.attach_name: Optional[str] = "attached" + uuid4().hex if attach else None
+        self.attach_name: Optional[str] = f"attached{uuid4().hex}" if attach else None
 
         if filename:
             self.mimetype: str = (

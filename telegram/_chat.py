@@ -407,9 +407,7 @@ class Chat(TelegramObject):
         """
         if self.title is not None:
             return self.title
-        if self.full_name is not None:
-            return self.full_name
-        return None
+        return self.full_name if self.full_name is not None else None
 
     @property
     def full_name(self) -> Optional[str]:
@@ -434,9 +432,7 @@ class Chat(TelegramObject):
         """:obj:`str`: Convenience property. If the chat has a :attr:`username`, returns a t.me
         link of the chat.
         """
-        if self.username:
-            return f"https://t.me/{self.username}"
-        return None
+        return f"https://t.me/{self.username}" if self.username else None
 
     @classmethod
     def de_json(cls, data: Optional[JSONDict], bot: "Bot") -> Optional["Chat"]:

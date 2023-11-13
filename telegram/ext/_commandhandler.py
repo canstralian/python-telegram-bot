@@ -153,14 +153,14 @@ class CommandHandler(BaseHandler[Update, CCT]):
                 command_parts = command.split("@")
                 command_parts.append(message.get_bot().username)
 
-                if not (
-                    command_parts[0].lower() in self.commands
-                    and command_parts[1].lower() == message.get_bot().username.lower()
+                if (
+                    command_parts[0].lower() not in self.commands
+                    or command_parts[1].lower()
+                    != message.get_bot().username.lower()
                 ):
                     return None
 
-                filter_result = self.filters.check_update(update)
-                if filter_result:
+                if filter_result := self.filters.check_update(update):
                     return args, filter_result
                 return False
         return None

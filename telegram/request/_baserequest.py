@@ -298,16 +298,10 @@ class BaseRequest(
         description = response_data.get("description")
         message = description if description else "Unknown HTTPError"
 
-        # In some special cases, we can raise more informative exceptions:
-        # see https://core.telegram.org/bots/api#responseparameters and
-        # https://core.telegram.org/bots/api#making-requests
-        parameters = response_data.get("parameters")
-        if parameters:
-            migrate_to_chat_id = parameters.get("migrate_to_chat_id")
-            if migrate_to_chat_id:
+        if parameters := response_data.get("parameters"):
+            if migrate_to_chat_id := parameters.get("migrate_to_chat_id"):
                 raise ChatMigrated(migrate_to_chat_id)
-            retry_after = parameters.get("retry_after")
-            if retry_after:
+            if retry_after := parameters.get("retry_after"):
                 raise RetryAfter(retry_after)
 
             message += f"\nThe server response contained unknown parameters: {parameters}"

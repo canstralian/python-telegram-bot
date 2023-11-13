@@ -295,7 +295,7 @@ class TestUpdater:
 
             offset = kwargs.pop("offset", None)
             # Check that we don't get any unexpected kwargs
-            assert kwargs == {}
+            assert not kwargs
 
             if offset is not None and self.message_count != 0:
                 assert offset == self.message_count + 1, "get_updates got wrong `offset` parameter"
@@ -666,7 +666,7 @@ class TestUpdater:
             for key, value in expected_delete_webhook.items():
                 assert kwargs.pop(key, None) == value, f"delete, {key}, {value}"
 
-            assert kwargs == {}
+            assert not kwargs
             return True
 
         async def serve_forever(*args, **kwargs):

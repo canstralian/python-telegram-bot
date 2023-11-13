@@ -1150,7 +1150,7 @@ class Application(Generic[BT, CCT, UD, CD, BD, JQ], AsyncContextManager["Applica
             try:
                 for handler in handlers:
                     check = handler.check_update(update)  # Should the handler handle this update?
-                    if not (check is None or check is False):  # if yes,
+                    if check is not None and check is not False:  # if yes,
                         if not context:  # build a context if not already built
                             context = self.context_types.context.from_update(update, self)
                             await context.refresh_data()
@@ -1173,12 +1173,10 @@ class Application(Generic[BT, CCT, UD, CD, BD, JQ], AsyncContextManager["Applica
                             await coroutine
                         break  # Only a max of 1 handler per group is handled
 
-            # Stop processing with any other handler.
             except ApplicationHandlerStop:
                 _LOGGER.debug("Stopping further handlers due to ApplicationHandlerStop")
                 break
 
-            # Dispatch any error.
             except Exception as exc:
                 if await self.process_error(update=update, error=exc):
                     _LOGGER.debug("Error handler stopped further handlers.")
@@ -1477,15 +1475,12 @@ class Application(Generic[BT, CCT, UD, CD, BD, JQ], AsyncContextManager["Applica
 
             # asyncio synchronization primitives don't accept a timeout argument, it is recommended
             # to use wait_for instead
-            try:
+            with contextlib.suppress(asyncio.TimeoutError):
                 await asyncio.wait_for(
                     self.__update_persistence_event.wait(),
                     timeout=self.persistence.update_interval,
                 )
                 return
-            except asyncio.TimeoutError:
-                pass
-
             # putting this *after* the wait_for so we don't immediately update on startup as
             # that would make little sense
             await self.update_persistence()

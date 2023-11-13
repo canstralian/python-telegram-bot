@@ -95,9 +95,7 @@ class ChatJoinRequestHandler(BaseHandler[Update, CCT]):
     def _parse_chat_id(chat_id: Optional[SCT[int]]) -> FrozenSet[int]:
         if chat_id is None:
             return frozenset()
-        if isinstance(chat_id, int):
-            return frozenset({chat_id})
-        return frozenset(chat_id)
+        return frozenset({chat_id}) if isinstance(chat_id, int) else frozenset(chat_id)
 
     @staticmethod
     def _parse_username(username: Optional[SCT[str]]) -> FrozenSet[str]:
@@ -118,11 +116,13 @@ class ChatJoinRequestHandler(BaseHandler[Update, CCT]):
 
         """
         if isinstance(update, Update) and update.chat_join_request:
-            if not self._chat_ids and not self._usernames:
+            if self._chat_ids or self._usernames:
+                return (
+                    True
+                    if update.chat_join_request.chat.id in self._chat_ids
+                    else update.chat_join_request.from_user.username
+                    in self._usernames
+                )
+            else:
                 return True
-            if update.chat_join_request.chat.id in self._chat_ids:
-                return True
-            if update.chat_join_request.from_user.username in self._usernames:
-                return True
-            return False
         return False
