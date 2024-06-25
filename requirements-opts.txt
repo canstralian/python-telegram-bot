@@ -25,3 +25,4 @@ APScheduler~=3.10.1 # job-queue!ext
 
 # pytz is required by APS and just needs the lower bound due to #2120
 pytz>=2018.6 # job-queue!ext
+anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
