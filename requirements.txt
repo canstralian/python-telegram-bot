@@ -7,3 +7,4 @@
 
 # httpx has no stable release yet, so let's be cautious for now
 httpx ~= 0.24.1
+anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
