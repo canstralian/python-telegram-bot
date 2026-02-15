@@ -41,6 +41,25 @@ from telegram.ext import (
     filters,
 )
 
+# Custom logging filter to redact sensitive information
+class SensitiveDataFilter(logging.Filter):
+    """Filter to redact sensitive data from logs."""
+    
+    SENSITIVE_PATTERNS = [
+        (r'\b\d{10,}\b', '[REDACTED_ID]'),  # User IDs, chat IDs
+        (r'bot\d+:[A-Za-z0-9_-]+', '[REDACTED_TOKEN]'),  # Bot tokens
+        (r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[REDACTED_EMAIL]'),  # Emails
+    ]
+    
+    def filter(self, record):
+        """Redact sensitive information from log messages."""
+        import re
+        if isinstance(record.msg, str):
+            for pattern, replacement in self.SENSITIVE_PATTERNS:
+                record.msg = re.sub(pattern, replacement, record.msg)
+        return True
+
+
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -49,6 +68,8 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
+# Add sensitive data filter to logger
+logger.addFilter(SensitiveDataFilter())
 
 # State definitions for top level conversation
 SELECTING_ACTION, ADDING_MEMBER, ADDING_SELF, DESCRIBING_SELF = map(chr, range(4))

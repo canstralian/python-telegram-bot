@@ -291,16 +291,22 @@ class Bot(TelegramObject, AsyncContextManager["Bot"]):
             )
 
         if private_key:
-            if CRYPTO_INSTALLED:
+            if not CRYPTO_INSTALLED:
+                raise RuntimeError(
+                    "The 'cryptography' package is required to use Telegram Passport features. "
+                    "Install it via: pip install 'python-telegram-bot[passport]' or "
+                    "pip install cryptography"
+                )
+            
+            # Validate and load the private key
+            try:
                 self._private_key = serialization.load_pem_private_key(
                     private_key, password=private_key_password, backend=default_backend()
                 )
-
-            else:
-                raise RuntimeError(
-                    "To use Telegram Passports, PTB must be installed via `pip install "
-                    '"python-telegram-bot[passport]"`.'
-                )
+            except Exception as exc:
+                raise ValueError(
+                    f"Failed to load private key for Telegram Passport: {exc}"
+                ) from exc
         self._freeze()
 
     @property

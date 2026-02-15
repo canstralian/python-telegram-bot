@@ -42,21 +42,39 @@ def get_member(enum_cls: Type[_Enum], value: _A, default: _B) -> Union[_Enum, _A
         return default
 
 
-# Python 3.11 and above has a different output for mixin classes for IntEnum, StrEnum and IntFlag
-# see https://docs.python.org/3.11/library/enum.html#notes. We want e.g. str(StrEnumTest.FOO) to
-# return "foo" instead of "StrEnumTest.FOO", which is not the case < py3.11
-class StringEnum(str, _enum.Enum):
-    """Helper class for string enums where ``str(member)`` prints the value, but ``repr(member)``
-    gives ``EnumName.MEMBER_NAME``.
-    """
+# Python 3.11+ has built-in StrEnum with correct behavior
+# For Python < 3.11, we use our custom implementation
+if sys.version_info >= (3, 11):
+    from enum import StrEnum as _BuiltinStrEnum
+    
+    class StringEnum(_BuiltinStrEnum):
+        """Helper class for string enums where ``str(member)`` prints the value, but ``repr(member)``
+        gives ``EnumName.MEMBER_NAME``.
+        
+        Uses Python 3.11+ built-in StrEnum for better performance and compatibility.
+        """
+        
+        __slots__ = ()
+        
+        def __repr__(self) -> str:
+            return f"<{self.__class__.__name__}.{self.name}>"
 
-    __slots__ = ()
+else:
+    # Python 3.11 and above has a different output for mixin classes for IntEnum, StrEnum and IntFlag
+    # see https://docs.python.org/3.11/library/enum.html#notes. We want e.g. str(StrEnumTest.FOO) to
+    # return "foo" instead of "StrEnumTest.FOO", which is not the case < py3.11
+    class StringEnum(str, _enum.Enum):
+        """Helper class for string enums where ``str(member)`` prints the value, but ``repr(member)``
+        gives ``EnumName.MEMBER_NAME``.
+        """
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}.{self.name}>"
+        __slots__ = ()
 
-    def __str__(self) -> str:
-        return str.__str__(self)
+        def __repr__(self) -> str:
+            return f"<{self.__class__.__name__}.{self.name}>"
+
+        def __str__(self) -> str:
+            return str.__str__(self)
 
 
 # Apply the __repr__ modification and __str__ fix to IntEnum

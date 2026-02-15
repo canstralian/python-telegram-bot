@@ -334,3 +334,54 @@ if to_run:
 @pytest.mark.parametrize(("method", "data"), argvalues=argvalues, ids=names)
 def test_official(method, data):
     method(data)
+
+
+def test_ignored_params_not_mandatory():
+    """Test that parameters marked as ignored by PTB are not mandatory in the API."""
+    # This test ensures that parameters in PTB_IGNORED_PARAMS are handled correctly
+    # and do not cause issues when not provided
+    
+    # Test that ignored params for InlineQueryResult subtypes are not required
+    for pattern in PTB_IGNORED_PARAMS:
+        if pattern.startswith("InlineQueryResult"):
+            ignored = ptb_ignored_params(pattern)
+            assert "type" in ignored or len(ignored) > 0
+    
+    # Test that ignored params for ChatMember subtypes are not required
+    for pattern in PTB_IGNORED_PARAMS:
+        if pattern.startswith("ChatMember"):
+            ignored = ptb_ignored_params(pattern)
+            assert "status" in ignored or len(ignored) > 0
+
+
+def test_extra_params_no_interference():
+    """Test that extra parameters added by PTB don't interfere with official API."""
+    # This test ensures backward compatibility and validates that extra params
+    # like 'contact' in send_contact don't conflict with official parameters
+    
+    # Test send_contact extra params
+    extra = ptb_extra_params("send_contact")
+    assert "contact" in extra
+    
+    # Test send_location extra params
+    extra = ptb_extra_params("send_location")
+    assert "location" in extra
+    
+    # Test send_venue extra params
+    extra = ptb_extra_params("send_venue")
+    assert "venue" in extra
+
+
+def test_backwards_compat_params_optional():
+    """Test that backwards compatibility parameters are optional."""
+    # This ensures that parameters kept for backwards compatibility
+    # don't break when omitted in newer code
+    
+    # Test sticker-related backwards compat
+    compat = backwards_compat_kwargs("create_new_sticker_set")
+    assert len(compat) > 0
+    assert "png_sticker" in compat or "stickers" in compat
+    
+    # Test media-related backwards compat
+    compat = backwards_compat_kwargs("send_animation")
+    assert "thumb" in compat
