@@ -1,49 +1,168 @@
-.. image:: https://raw.githubusercontent.com/python-telegram-bot/logos/master/logo-text/png/ptb-logo-text_768.png
-:align: center
-:target: https://python-telegram-bot.org
-:alt: python-telegram-bot Logo
-.. image:: https://img.shields.io/pypi/v/python-telegram-bot.svg
-:target: https://pypi.org/project/python-telegram-bot/
-.. image:: https://img.shields.io/badge/Bot%20API-6.7-blue?logo=telegram
-:target: https://core.telegram.org/bots/api-changelog
-.. image:: https://img.shields.io/pypi/l/python-telegram-bot.svg
-:target: https://www.gnu.org/licenses/lgpl-3.0.html
-.. image:: https://codecov.io/gh/python-telegram-bot/python-telegram-bot/branch/master/graph/badge.svg
-:target: https://app.codecov.io/gh/python-telegram-bot/python-telegram-bot
-.. image:: https://app.deepsource.com/gh/python-telegram-bot/python-telegram-bot.svg/?label=active+issues
-:target: https://app.deepsource.com/gh/python-telegram-bot/python-telegram-bot/
-The wrapper you can't refuse—built for robust, asynchronous automation.
-Introduction
-This library provides a pure Python, asynchronous interface for the Telegram Bot API <https://core.telegram.org/bots/api>_. Engineered for Python 3.8+, it supports high-level abstractions via telegram.ext to accelerate the Implementation phase of your SDLC.
-Purple Team & Security Focus
-As a collaborator in offensive and defensive security, use this library to bridge the gap:
- * Offensive: Build C2 (Command & Control) interfaces or exfiltration notification bots.
- * Defensive: Create real-time alerting systems for SOC environments.
- * SDLC Integration: Ensure your bot moves through a structured pipeline:
-   * Design: Utilize telegram.ext for modular, scalable bot architecture.
-   * Testing: Leverage the built-in asyncio support to write robust unit tests.
-   * Maintenance: Use GPG-verified releases to ensure supply chain integrity.
-Verifying Integrity
-In a purple team context, trust is earned. We sign all releases with a GPG key to prevent MITM or supply chain injections.
-Find the public keys here <https://github.com/python-telegram-bot/python-telegram-bot/tree/master/public_keys>_.
+⸻
+
+python-telegram-bot (Security-Focused Fork)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/python-telegram-bot/logos/master/logo-text/png/ptb-logo-text_768.png" width="500" alt="python-telegram-bot Logo">
+</p>
+
+
+<p align="center">
+  <a href="https://pypi.org/project/python-telegram-bot/">
+    <img src="https://img.shields.io/pypi/v/python-telegram-bot.svg" alt="PyPI Version">
+  </a>
+  <a href="https://core.telegram.org/bots/api-changelog">
+    <img src="https://img.shields.io/badge/Bot%20API-6.7-blue?logo=telegram" alt="Bot API">
+  </a>
+  <a href="https://www.gnu.org/licenses/lgpl-3.0.html">
+    <img src="https://img.shields.io/pypi/l/python-telegram-bot.svg" alt="License">
+  </a>
+  <a href="https://app.codecov.io/gh/python-telegram-bot/python-telegram-bot">
+    <img src="https://codecov.io/gh/python-telegram-bot/python-telegram-bot/branch/master/graph/badge.svg" alt="Coverage">
+  </a>
+  <a href="https://app.deepsource.com/gh/python-telegram-bot/python-telegram-bot/">
+    <img src="https://app.deepsource.com/gh/python-telegram-bot/python-telegram-bot.svg/?label=active+issues" alt="Static Analysis">
+  </a>
+</p>
+
+
+The wrapper you can’t refuse — built for robust, asynchronous automation.
+
+⸻
+
+Overview
+
+This fork builds on the official python-telegram-bot￼ library and reframes its usage through a Security Development Lifecycle (SDLC) lens.
+
+It provides a pure Python, fully asynchronous interface to the Telegram Bot API￼, engineered for Python 3.8+ and powered by asyncio.
+
+The telegram.ext framework enables modular bot architectures designed for scalable automation in adversarial and defensive environments.
+
+⸻
+
+Security & SDLC Alignment
+
+This fork positions Telegram bot development as part of a structured security lifecycle.
+
+1. Design
+	•	Modular architecture via telegram.ext
+	•	Async-first execution model
+	•	Explicit separation of handlers, middleware, and infrastructure
+	•	Designed for integration into controlled automation pipelines
+
+2. Implementation
+	•	Native asyncio support
+	•	Clean dispatcher model
+	•	Extensible application builder
+	•	Minimal blocking surface
+
+3. Testing
+	•	Async-friendly unit testing patterns
+	•	Deterministic handler flows
+	•	Structured logging integration
+
+4. Verification
+
+All upstream releases are GPG-signed to protect against supply chain tampering.
+
+Public keys:
+https://github.com/python-telegram-bot/python-telegram-bot/tree/master/public_keys
+
+Always verify signatures before deploying into sensitive environments.
+
+5. Maintenance
+	•	Track upstream security patches
+	•	Pin dependency versions
+	•	Use reproducible builds in CI/CD
+	•	Review asyncio concurrency interactions during upgrades
+
+⸻
+
+Purple Team Applications
+
+This library bridges offensive automation and defensive response systems.
+
+Offensive Use Cases
+	•	Controlled C2 interfaces (authorized environments only)
+	•	Secure operator notification channels
+	•	Red team engagement telemetry bots
+
+Defensive Use Cases
+	•	SOC alert relays
+	•	Real-time monitoring bots
+	•	Incident response orchestration triggers
+	•	Secure alert fanout via Telegram
+
+This fork emphasizes structured deployment and controlled usage. Always operate within authorized scope.
+
+⸻
+
 Installation
-Standard deployment:
-.. code:: shell
-$ pip install python-telegram-bot --upgrade
 
-For specialized environments (e.g., routing through a proxy for OpSec):
-.. code:: shell
-$ pip install "python-telegram-bot[socks]"
+Standard installation:
 
-Quick Start: The "Echo" Baseline
-The Implementation stage usually begins with a functional baseline. View the echobot.py in our examples section <https://docs.python-telegram-bot.org/examples.html>_ to see the asynchronous dispatcher in action.
+pip install python-telegram-bot --upgrade
+
+With SOCKS proxy support (OpSec-aware routing):
+
+pip install "python-telegram-bot[socks]"
+
+Pin versions in production:
+
+pip install python-telegram-bot==20.x.x
+
+
+⸻
+
+Quick Start — Echo Baseline
+
+The baseline implementation stage begins with a minimal working bot.
+
+See the official async echo example:
+
+https://docs.python-telegram-bot.org/examples.html
+
+Study the dispatcher and handler flow carefully — this forms the control plane of your automation system.
+
+⸻
+
+Concurrency & Risk Model
+
+Since v20.0, PTB is fully asyncio-based.
+
+Important constraints:
+	•	Not thread-safe
+	•	Shared mutable state must be guarded
+	•	Logging/database wrappers must respect event loop constraints
+	•	Race conditions can occur when mixing threads with async tasks
+
+If your architecture involves:
+	•	Multi-threaded logging
+	•	Database pooling
+	•	Parallel task execution
+
+You must explicitly design around event loop boundaries.
+
+Async mistakes in production bots become operational failures. Treat concurrency as part of your threat model.
+
+⸻
+
 Technical Resources
- * Technical Documentation <https://docs.python-telegram-bot.org/>_ (API Reference)
- * Project Wiki <https://github.com/python-telegram-bot/python-telegram-bot/wiki/>_ (Deep Dives)
- * Official Telegram API <https://core.telegram.org/bots/api>_ (The source of truth)
-Concurrency & Risk
-Since v20.0, PTB is built on asyncio. Note that it is not thread-safe. In your Design phase, account for potential race conditions if using multi-threaded logging or database wrappers alongside the Application builder.
-License
-Licensed under LGPL-3. Build, modify, and secure freely.
-Would you like me to generate a secure boilerplate Python script for a Telegram C2 bot using this library?
 
+Documentation:
+https://docs.python-telegram-bot.org/
+
+Project Wiki:
+https://github.com/python-telegram-bot/python-telegram-bot/wiki/
+
+Telegram Bot API:
+https://core.telegram.org/bots/api
+
+⸻
+
+License
+
+Licensed under LGPL-3.
+You are free to build, modify, and secure responsibly.
+
+⸻
