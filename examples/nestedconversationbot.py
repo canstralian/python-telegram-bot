@@ -15,6 +15,7 @@ bot.
 """
 
 import logging
+import re
 from typing import Any, Dict, Tuple
 
 from telegram import __version__ as TG_VER
@@ -46,17 +47,16 @@ class SensitiveDataFilter(logging.Filter):
     """Filter to redact sensitive data from logs."""
     
     SENSITIVE_PATTERNS = [
-        (r'\b\d{10,}\b', '[REDACTED_ID]'),  # User IDs, chat IDs
-        (r'bot\d+:[A-Za-z0-9_-]+', '[REDACTED_TOKEN]'),  # Bot tokens
-        (r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[REDACTED_EMAIL]'),  # Emails
+        (re.compile(r'\b\d{10,}\b'), '[REDACTED_ID]'),  # User IDs, chat IDs
+        (re.compile(r'bot\d+:[A-Za-z0-9_-]+'), '[REDACTED_TOKEN]'),  # Bot tokens
+        (re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'), '[REDACTED_EMAIL]'),  # Emails
     ]
     
     def filter(self, record):
         """Redact sensitive information from log messages."""
-        import re
         if isinstance(record.msg, str):
             for pattern, replacement in self.SENSITIVE_PATTERNS:
-                record.msg = re.sub(pattern, replacement, record.msg)
+                record.msg = pattern.sub(replacement, record.msg)
         return True
 
 

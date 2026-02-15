@@ -54,8 +54,6 @@ if sys.version_info >= (3, 11):
         Uses Python 3.11+ built-in StrEnum for better performance and compatibility.
         """
         
-        __slots__ = ()
-        
         def __repr__(self) -> str:
             return f"<{self.__class__.__name__}.{self.name}>"
 

@@ -2275,10 +2275,10 @@ class TestConversationHandler:
     async def test_illegal_state_transition(self, app, user1):
         """Test that illegal state transitions are handled gracefully."""
         # This test ensures that trying to transition to an undefined state
-        # doesn't cause crashes or unexpected behavior
+        # (one not in the states dict) doesn't cause crashes or unexpected behavior
         
         async def bad_callback(_, __):
-            # Return a state that doesn't exist
+            # Return a state that doesn't exist in the states dictionary
             return 999
         
         async def fallback_callback(_, __):
@@ -2288,7 +2288,7 @@ class TestConversationHandler:
         conv_handler = ConversationHandler(
             entry_points=[MessageHandler(filters.Regex("start"), bad_callback)],
             states={
-                999: [MessageHandler(filters.ALL, lambda u, c: ConversationHandler.END)],
+                # Note: state 999 is NOT defined here, so the fallback should be triggered
             },
             fallbacks=[MessageHandler(filters.ALL, fallback_callback)],
         )
@@ -2298,16 +2298,16 @@ class TestConversationHandler:
         message._unfreeze()
         
         async with app:
-            # Start with invalid state
+            # Start - this will transition to state 999 which is not defined
             await app.process_update(Update(0, message=message))
-            # Should transition to state 999
+            # The conversation should be in state 999
             assert self.current_state.get(user1.id) == 999
             
-            # Send another message while in the undefined state
+            # Send another message - since state 999 has no handlers, fallback should trigger
             message.text = "continue"
             await app.process_update(Update(0, message=message))
-            # Should end the conversation
-            assert self.current_state.get(user1.id) == ConversationHandler.END
+            # Fallback should have been triggered
+            assert self.test_flag == "fallback"
 
     async def test_redundant_parameters_ignored(self, app, user1):
         """Test that redundant parameters in handlers don't cause issues."""

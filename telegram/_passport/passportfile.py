@@ -180,27 +180,25 @@ class PassportFile(TelegramObject):
 
         """
         # Validate file_id before making the request
-        if not self.file_id or not isinstance(self.file_id, str):
-            raise ValueError("Invalid file_id: must be a non-empty string")
+        if self.file_id is None:
+            raise ValueError("file_id cannot be None")
+        if not isinstance(self.file_id, str):
+            raise ValueError("file_id must be a string")
+        if not self.file_id:
+            raise ValueError("file_id cannot be empty")
         
         # Validate that bot is available
         bot = self.get_bot()
         if bot is None:
             raise ValueError("Bot instance is not set. Cannot retrieve file.")
         
-        try:
-            file = await bot.get_file(
-                file_id=self.file_id,
-                read_timeout=read_timeout,
-                write_timeout=write_timeout,
-                connect_timeout=connect_timeout,
-                pool_timeout=pool_timeout,
-                api_kwargs=api_kwargs,
-            )
-            file.set_credentials(self._credentials)
-            return file
-        except Exception as exc:
-            # Re-raise with more context
-            raise type(exc)(
-                f"Failed to retrieve PassportFile with file_id '{self.file_id}': {exc}"
-            ) from exc
+        file = await bot.get_file(
+            file_id=self.file_id,
+            read_timeout=read_timeout,
+            write_timeout=write_timeout,
+            connect_timeout=connect_timeout,
+            pool_timeout=pool_timeout,
+            api_kwargs=api_kwargs,
+        )
+        file.set_credentials(self._credentials)
+        return file

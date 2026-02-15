@@ -380,7 +380,9 @@ def test_backwards_compat_params_optional():
     # Test sticker-related backwards compat
     compat = backwards_compat_kwargs("create_new_sticker_set")
     assert len(compat) > 0
-    assert "png_sticker" in compat or "stickers" in compat
+    # Verify that at least one of the expected backwards compat params is present
+    assert "png_sticker" in compat
+    assert "stickers" in compat
     
     # Test media-related backwards compat
     compat = backwards_compat_kwargs("send_animation")
