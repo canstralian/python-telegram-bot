@@ -377,12 +377,12 @@ def test_backwards_compat_params_optional():
     # This ensures that parameters kept for backwards compatibility
     # don't break when omitted in newer code
     
-    # Test sticker-related backwards compat
+    # Test sticker-related backwards compat - verify specific params
     compat = backwards_compat_kwargs("create_new_sticker_set")
-    assert len(compat) > 0
-    # Verify that at least one of the expected backwards compat params is present
+    # These are the backwards compat params for sticker creation
     assert "png_sticker" in compat
     assert "stickers" in compat
+    assert "tgs_sticker" in compat
     
     # Test media-related backwards compat
     compat = backwards_compat_kwargs("send_animation")

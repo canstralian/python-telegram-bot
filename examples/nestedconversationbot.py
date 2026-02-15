@@ -44,12 +44,19 @@ from telegram.ext import (
 
 # Custom logging filter to redact sensitive information
 class SensitiveDataFilter(logging.Filter):
-    """Filter to redact sensitive data from logs."""
+    """Filter to redact sensitive data from logs.
+    
+    Note: The ID pattern is conservative and may redact some legitimate numbers.
+    Adjust the patterns based on your specific logging needs.
+    """
     
     SENSITIVE_PATTERNS = [
-        (re.compile(r'\b\d{10,}\b'), '[REDACTED_ID]'),  # User IDs, chat IDs
-        (re.compile(r'bot\d+:[A-Za-z0-9_-]+'), '[REDACTED_TOKEN]'),  # Bot tokens
-        (re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'), '[REDACTED_EMAIL]'),  # Emails
+        # More specific pattern for user/chat IDs in common log formats
+        (re.compile(r'(user_id|chat_id|id)[:\s=]+(\d{10,})'), r'\1: [REDACTED_ID]'),
+        # Bot tokens
+        (re.compile(r'bot\d+:[A-Za-z0-9_-]+'), '[REDACTED_TOKEN]'),
+        # Email addresses
+        (re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'), '[REDACTED_EMAIL]'),
     ]
     
     def filter(self, record):

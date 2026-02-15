@@ -2274,8 +2274,9 @@ class TestConversationHandler:
 
     async def test_illegal_state_transition(self, app, user1):
         """Test that illegal state transitions are handled gracefully."""
-        # This test ensures that trying to transition to an undefined state
-        # (one not in the states dict) doesn't cause crashes or unexpected behavior
+        # This test ensures that transitioning to an undefined state (one not in the states dict)
+        # is allowed, but since there are no handlers for that state, subsequent messages
+        # will trigger the fallback handlers.
         
         async def bad_callback(_, __):
             # Return a state that doesn't exist in the states dictionary
@@ -2288,7 +2289,7 @@ class TestConversationHandler:
         conv_handler = ConversationHandler(
             entry_points=[MessageHandler(filters.Regex("start"), bad_callback)],
             states={
-                # Note: state 999 is NOT defined here, so the fallback should be triggered
+                # Note: state 999 is NOT defined here
             },
             fallbacks=[MessageHandler(filters.ALL, fallback_callback)],
         )
@@ -2300,10 +2301,10 @@ class TestConversationHandler:
         async with app:
             # Start - this will transition to state 999 which is not defined
             await app.process_update(Update(0, message=message))
-            # The conversation should be in state 999
+            # The conversation enters state 999 even though it's not in the states dict
             assert self.current_state.get(user1.id) == 999
             
-            # Send another message - since state 999 has no handlers, fallback should trigger
+            # Send another message - since state 999 has no handlers, the fallback will trigger
             message.text = "continue"
             await app.process_update(Update(0, message=message))
             # Fallback should have been triggered

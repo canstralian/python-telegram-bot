@@ -180,12 +180,8 @@ class PassportFile(TelegramObject):
 
         """
         # Validate file_id before making the request
-        if self.file_id is None:
-            raise ValueError("file_id cannot be None")
-        if not isinstance(self.file_id, str):
-            raise ValueError("file_id must be a string")
-        if not self.file_id:
-            raise ValueError("file_id cannot be empty")
+        if not self.file_id or not isinstance(self.file_id, str):
+            raise ValueError("file_id must be a non-empty string")
         
         # Validate that bot is available
         bot = self.get_bot()
