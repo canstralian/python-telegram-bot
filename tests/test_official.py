@@ -341,17 +341,17 @@ def test_ignored_params_not_mandatory():
     # This test ensures that parameters in PTB_IGNORED_PARAMS are handled correctly
     # and do not cause issues when not provided
     
-    # Test that ignored params for InlineQueryResult subtypes are not required
-    for pattern in PTB_IGNORED_PARAMS:
-        if pattern.startswith("InlineQueryResult"):
-            ignored = ptb_ignored_params(pattern)
-            assert "type" in ignored or len(ignored) > 0
+    # Test that ignored params for InlineQueryResult subtypes are correctly defined
+    inline_result_ignored = ptb_ignored_params("InlineQueryResultArticle")
+    assert "type" in inline_result_ignored
     
-    # Test that ignored params for ChatMember subtypes are not required
-    for pattern in PTB_IGNORED_PARAMS:
-        if pattern.startswith("ChatMember"):
-            ignored = ptb_ignored_params(pattern)
-            assert "status" in ignored or len(ignored) > 0
+    # Test that ignored params for ChatMember subtypes are correctly defined
+    chat_member_ignored = ptb_ignored_params("ChatMemberAdministrator")
+    assert "status" in chat_member_ignored
+    
+    # Test PassportElementError
+    passport_error_ignored = ptb_ignored_params("PassportElementErrorDataField")
+    assert "source" in passport_error_ignored
 
 
 def test_extra_params_no_interference():
