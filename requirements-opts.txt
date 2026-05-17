@@ -12,7 +12,7 @@
 
 httpx[socks] # socks
 httpx[http2] # http2
-cryptography!=46.0.5,>=39.0.1 # passport
+cryptography!=46.0.7 # passport
 aiolimiter~=1.1.0 # rate-limiter!ext
 
 # tornado is rather stable, but let's not allow the next mayor release without prior testing
