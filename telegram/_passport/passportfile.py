@@ -104,12 +104,19 @@ class PassportFile(TelegramObject):
 
         Returns:
             :class:`telegram.PassportFile`:
+        
+        Raises:
+            :class:`ValueError`: If data is malformed or credentials are invalid
 
         """
         data = cls._parse_data(data)
 
         if not data:
             return None
+        
+        # Validate credentials before proceeding
+        if credentials is None:
+            raise ValueError("FileCredentials cannot be None for decrypted PassportFile")
 
         data["credentials"] = credentials
 
@@ -169,9 +176,19 @@ class PassportFile(TelegramObject):
 
         Raises:
             :class:`telegram.error.TelegramError`
+            :class:`ValueError`: If file_id is invalid or bot is not set
 
         """
-        file = await self.get_bot().get_file(
+        # Validate file_id before making the request
+        if not self.file_id or not isinstance(self.file_id, str):
+            raise ValueError("file_id must be a non-empty string")
+        
+        # Validate that bot is available
+        bot = self.get_bot()
+        if bot is None:
+            raise ValueError("Bot instance is not set. Cannot retrieve file.")
+        
+        file = await bot.get_file(
             file_id=self.file_id,
             read_timeout=read_timeout,
             write_timeout=write_timeout,

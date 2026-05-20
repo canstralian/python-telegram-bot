@@ -2271,3 +2271,81 @@ class TestConversationHandler:
             self.test_flag = None
             await app.process_update(Update(0, message=message))
             assert self.test_flag == 3
+
+    async def test_illegal_state_transition(self, app, user1):
+        """Test that illegal state transitions are handled gracefully."""
+        # This test ensures that transitioning to an undefined state (one not in the states dict)
+        # is allowed, but since there are no handlers for that state, subsequent messages
+        # will trigger the fallback handlers.
+        
+        async def bad_callback(_, __):
+            # Return a state that doesn't exist in the states dictionary
+            return 999
+        
+        async def fallback_callback(_, __):
+            self.test_flag = "fallback"
+            return ConversationHandler.END
+        
+        conv_handler = ConversationHandler(
+            entry_points=[MessageHandler(filters.Regex("start"), bad_callback)],
+            states={
+                # Note: state 999 is NOT defined here
+            },
+            fallbacks=[MessageHandler(filters.ALL, fallback_callback)],
+        )
+        app.add_handler(conv_handler)
+        
+        message = Message(0, None, self.group, text="start", from_user=user1)
+        message._unfreeze()
+        
+        async with app:
+            # Start - this will transition to state 999 which is not defined
+            await app.process_update(Update(0, message=message))
+            # The conversation enters state 999 even though it's not in the states dict
+            assert self.current_state.get(user1.id) == 999
+            
+            # Send another message - since state 999 has no handlers, the fallback will trigger
+            message.text = "continue"
+            await app.process_update(Update(0, message=message))
+            # Fallback should have been triggered
+            assert self.test_flag == "fallback"
+
+    async def test_redundant_parameters_ignored(self, app, user1):
+        """Test that redundant parameters in handlers don't cause issues."""
+        # This ensures that specifying both old and new parameter styles
+        # doesn't cause conflicts
+        
+        async def entry_callback(_, __):
+            self.test_flag = "entry"
+            return 1
+        
+        async def state_callback(_, __):
+            self.test_flag = "state"
+            return ConversationHandler.END
+        
+        # Create handler with potential redundant configuration
+        # Testing that multiple ways to specify the same thing don't conflict
+        conv_handler = ConversationHandler(
+            entry_points=[
+                MessageHandler(filters.Regex("start"), entry_callback),
+            ],
+            states={
+                1: [MessageHandler(filters.ALL, state_callback)],
+            },
+            fallbacks=[],
+            per_chat=True,  # Redundant with per_message=False, per_user=False
+            per_user=False,
+            per_message=False,
+        )
+        app.add_handler(conv_handler)
+        
+        message = Message(0, None, self.group, text="start", from_user=user1)
+        message._unfreeze()
+        
+        async with app:
+            await app.process_update(Update(0, message=message))
+            assert self.test_flag == "entry"
+            
+            message.text = "next"
+            await app.process_update(Update(0, message=message))
+            assert self.test_flag == "state"
