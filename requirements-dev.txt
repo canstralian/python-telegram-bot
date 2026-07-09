@@ -8,3 +8,4 @@ flaky  # Used for flaky tests (flaky decorator)
 beautifulsoup4  # used in test_official for parsing tg docs
 
 wheel  # required for building the wheels for releases
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
